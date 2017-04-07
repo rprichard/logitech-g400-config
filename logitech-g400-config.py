@@ -1,7 +1,8 @@
-#!/usr/bin/env python3
-
-# Install the Ubuntu packages:
-#    $ sudo apt-get install python3-cffi
+#!/usr/bin/python3 -B
+#
+# (Use -B to suppress __pycache__/pyc/pyo creation.  They breaks things, e.g.
+# imagine running this script as root.)
+#
 
 from hidapi_cffi import hidapi
 import argparse
@@ -13,7 +14,11 @@ FEATURE_DPI  = 0x8e
 def usage(err=0):
     print("usage: logitech-g400-config.py [-rRATE] [-dDPI]")
     print("  RATE is in Hz and is one of: 125, 250, 500, or 1000.  The Windows driver")
-    print("  defaults to 500 Hz.  DPI is an integer between 3 and 7 inclusive.")
+    print("  defaults to 500 Hz.  DPI is an integer between 3 and 7 inclusive.  The")
+    print("  Windows driver defaults to four DPI settings, each of which configures a")
+    print("  different DPI level: 400=>3, 800=>4, 1800=>5, 3600=>6.  It never uses 7,")
+    print("  but the device seems OK with that value.")
+    print("  ")
     sys.exit(err)
 
 def enum_hidapi_mice():
