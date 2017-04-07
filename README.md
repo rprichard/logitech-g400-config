@@ -6,7 +6,7 @@ Logitech G400 gaming mouse.
 The program uses the hidapi library (http://www.signal11.us/oss/hidapi/) for
 reading/writing the HID "feature reports" of the G400 mouse.  On Linux, this
 library uses the hidraw ("HID raw") driver.  I believe hidapi also uses udev
-and/or sysdev for querying the USB devices.
+and/or sysfs for querying the USB devices.
 
 The tool is written in Python3 and uses a CFFI-based module to access hidapi.
 On Ubuntu, try installing python3-cffi.  The CFFI-hidapi bridge module is less
