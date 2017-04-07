@@ -13,12 +13,15 @@ FEATURE_DPI  = 0x8e
 
 def usage(err=0):
     print("usage: logitech-g400-config.py [-rRATE] [-dDPI]")
+    print("")
     print("  RATE is in Hz and is one of: 125, 250, 500, or 1000.  The Windows driver")
-    print("  defaults to 500 Hz.  DPI is an integer between 3 and 7 inclusive.  The")
-    print("  Windows driver defaults to four DPI settings, each of which configures a")
-    print("  different DPI level: 400=>3, 800=>4, 1800=>5, 3600=>6.  It never uses 7,")
-    print("  but the device seems OK with that value.")
-    print("  ")
+    print("  defaults to 500 Hz.")
+    print("")
+    print("  DPI is an integer between 3 and 7 inclusive.  The Windows driver defaults to")
+    print("  four DPI settings, each of which configures a different DPI level:")
+    print("  400=>3, 800=>4, 1800=>5, 3600=>6.  It never uses 7, but the device seems OK with")
+    print("  that value.")
+    print("")
     sys.exit(err)
 
 def enum_hidapi_mice():

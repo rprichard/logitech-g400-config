@@ -9,12 +9,17 @@ library uses the hidraw ("HID raw") driver.  I believe hidapi also uses udev
 and/or sysfs for querying the USB devices.
 
 The tool is written in Python3 and uses a CFFI-based module to access hidapi.
-On Ubuntu, try installing python3-cffi.  The CFFI-hidapi bridge module is less
-active/stable, so a copy lives in this repository.
+The CFFI-hidapi bridge module is less active/stable, so a copy lives in this
+repository.
+
+## Prerequisites
+
+On Ubuntu: `sudo apt-get install python3 python3-cffi libhidapi-dev libhidapi-hidraw0 libhidapi-libusb0`
 
 ## Usage
 
-See the Python script for more detail, but basically there are two options:
+The script prints the current/final settings, and has two options for changing
+the settings.  See the Python script for more detail.
 
 ```
 usage: logitech-g400-config.py [-rRATE] [-dDPI]
