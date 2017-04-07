@@ -173,8 +173,6 @@ static void do_set_command(std::list<std::string> arg_list) {
     const auto dev = address_set ? find_device_by_address(ctx, address)
                                  : find_sole_device(ctx);
 
-    find_sole_device(ctx);
-
     auto devhnd = dev.open();
 
     // This API call should succeed on Linux and fail on platforms where
