@@ -47,3 +47,4 @@ $ sudo usermod -a -G plugdev $USER
 $ groups
 rprichard adm cdrom sudo dip plugdev lpadmin sambashare vboxusers wireshark
 ```
+Log out and back in to make sure group membership takes effect.
