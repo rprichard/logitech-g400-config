@@ -161,7 +161,7 @@ static void do_set_command(std::list<std::string> arg_list) {
                 std::cerr << "error: invalid --dpi-level argument: '" << arg << "'\n";
                 exit(1);
             }
-            dpi_level = level - 1;
+            dpi_level = level;
             continue;
         }
         std::cerr << "error: unrecognized argument: '" << arg_list.front() << "'\n";
@@ -197,7 +197,7 @@ static void do_set_command(std::list<std::string> arg_list) {
     }
 
     if (dpi_level != -1) {
-        std::array<uint8_t, 2> ctrl { 0x8e, static_cast<uint8_t>(0x03 + dpi_level) };
+        std::array<uint8_t, 2> ctrl { 0x8e, static_cast<uint8_t>(0x03 + dpi_level - 1) };
         libusb_control_transfer(
             devhnd.get(),
             /*bmRequestType=*/  0x21,
