@@ -184,26 +184,28 @@ static void do_set_command(std::list<std::string> arg_list) {
 
     if (sample_rate != SampleRateUnset) {
         std::array<uint8_t, 2> ctrl { 0x20, static_cast<uint8_t>(sample_rate) };
-        libusb_control_transfer(
+        const int count = check_libusb(libusb_control_transfer(
             devhnd.get(),
             /*bmRequestType=*/  0x21,
             /*bRequest=*/       9,
             /*wValue=*/         0x320,
             /*wIndex=*/         1,
             ctrl.data(), ctrl.size(),
-            /*timeout(ms)=*/    5000);
+            /*timeout(ms)=*/    5000));
+        assert(count == 2 && "incorrect number of bytes transferred to mouse");
     }
 
     if (dpi_level != -1) {
         std::array<uint8_t, 2> ctrl { 0x8e, static_cast<uint8_t>(0x03 + dpi_level - 1) };
-        libusb_control_transfer(
+        const int count = check_libusb(libusb_control_transfer(
             devhnd.get(),
             /*bmRequestType=*/  0x21,
             /*bRequest=*/       9,
             /*wValue=*/         0x38e,
             /*wIndex=*/         1,
             ctrl.data(), ctrl.size(),
-            /*timeout(ms)=*/    5000);
+            /*timeout(ms)=*/    5000));
+        assert(count == 2 && "incorrect number of bytes transferred to mouse");
     }
 
     check_libusb(libusb_release_interface(devhnd.get(), 0));
