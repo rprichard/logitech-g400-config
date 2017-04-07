@@ -1,7 +1,8 @@
 #!/usr/bin/python -B
 #
-# (Use -B to suppress __pycache__/pyc/pyo creation.  They breaks things, e.g.
-# imagine running this script as root.)
+# (Use -B to suppress __pycache__/pyc/pyo creation.  Those files can break
+# things, e.g. when I run a script as sudo and get root-owned files in my home
+# directory.)
 #
 
 import argparse
