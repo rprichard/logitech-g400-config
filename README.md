@@ -8,13 +8,13 @@ reading/writing the HID "feature reports" of the G400 mouse.  On Linux, this
 library uses the hidraw ("HID raw") driver.  I believe hidapi also uses udev
 and/or sysfs for querying the USB devices.
 
-The tool is written in Python3 and uses a CFFI-based module to access hidapi.
-The CFFI-hidapi bridge module is less active/stable, so a copy lives in this
-repository.
+The tool is written in Python (either 2.7 or 3.x) and uses a CFFI-based module
+to access hidapi.  The CFFI-hidapi bridge module is less active/stable, so a
+copy lives in this repository.
 
 ## Prerequisites
 
-On Ubuntu: `sudo apt-get install python3 python3-cffi libhidapi-dev libhidapi-hidraw0 libhidapi-libusb0`
+On Ubuntu: `sudo apt-get install python-cffi libhidapi-dev libhidapi-hidraw0 libhidapi-libusb0`
 
 ## Usage
 

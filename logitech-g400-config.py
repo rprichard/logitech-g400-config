@@ -1,12 +1,14 @@
-#!/usr/bin/python3 -B
+#!/usr/bin/python -B
 #
 # (Use -B to suppress __pycache__/pyc/pyo creation.  They breaks things, e.g.
 # imagine running this script as root.)
 #
 
-from hidapi_cffi import hidapi
 import argparse
 import sys
+import os
+sys.path.insert(1, os.path.join(os.path.dirname(os.path.realpath(__file__)), "hidapi_cffi"))
+import hidapi
 
 FEATURE_RATE = 0x20
 FEATURE_DPI  = 0x8e
@@ -39,12 +41,14 @@ def open_device():
         info = info[0]
     return hidapi.Device(info)
 
+def bytechr(val):
+    return chr(val) if str is bytes else bytes([val])
+
 def set_var(dev, var, val):
-    dev.send_feature_report(bytes([val]), bytes([var]))
+    dev.send_feature_report(bytechr(val), bytechr(var))
 
 def get_var(dev, var):
-    (val,) = dev.get_feature_report(bytes([var]), 1)
-    return val
+    return ord(dev.get_feature_report(bytechr(var), 1))
 
 def main():
     dev = open_device()
