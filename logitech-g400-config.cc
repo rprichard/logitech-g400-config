@@ -14,6 +14,7 @@
 
 #include "usb_wrapper.h"
 
+const char *const kVersion = "0.1";
 const uint16_t kMouseVendorId = 0x046d;
 const uint16_t kMouseProductId = 0xc245;
 const std::tuple<uint16_t, uint16_t> kMouseProduct { kMouseVendorId, kMouseProductId };
@@ -35,21 +36,21 @@ static UsbDevice find_device_by_address(UsbContext &ctx, UsbAddress address) {
             continue;
         }
         if (dev.product() != kMouseProduct) {
-            throw "Device " + address.to_string() + " is not a " + kMouseProductName;
+            throw "device " + address.to_string() + " is not a " + kMouseProductName;
         }
         return dev;
     }
-    throw "Could not find device " + address.to_string();
+    throw "could not find device " + address.to_string();
 }
 
 static UsbDevice find_sole_device(UsbContext &ctx) {
     const auto dev_list = get_mouse_devices(ctx);
     if (dev_list.size() == 0) {
-        throw std::string("Could not find a ") + kMouseProductName + " device";
+        throw std::string("could not find a ") + kMouseProductName + " device";
     } else if (dev_list.size() == 1) {
         return dev_list[0];
     } else {
-        throw std::string("Multiple ") + kMouseProductName + " devices exist -- specify a bus.dev address";
+        throw std::string("multiple ") + kMouseProductName + " devices exist: specify --address BUS.DEV";
     }
 }
 
@@ -220,14 +221,18 @@ static std::list<std::string> make_arg_list(int argc, char *argv[]) {
 }
 
 int main(int argc, char *argv[]) {
-    auto arg_list = make_arg_list(argc, argv);
-    if (arg_list.empty() || arg_list.front() == "--help") {
-        show_usage();
-        exit(0);
-    }
-    const auto cmd = arg_list.front();
-    arg_list.pop_front();
     try {
+        auto arg_list = make_arg_list(argc, argv);
+        if (arg_list.empty() || arg_list.front() == "--help") {
+            show_usage();
+            exit(0);
+        }
+        if (arg_list.front() == "--version") {
+            std::cout << kVersion << "\n";
+            exit(0);
+        }
+        const auto cmd = arg_list.front();
+        arg_list.pop_front();
         if (cmd == "list") {
             if (!arg_list.empty()) {
                 std::cerr << "error: 'list' command takes no arguments\n";
@@ -244,6 +249,6 @@ int main(int argc, char *argv[]) {
     } catch (const std::string &err) {
         std::cerr << "error: " << err << "\n";
         exit(1);
-   }
-   return 0;
+    }
+    return 0;
 }

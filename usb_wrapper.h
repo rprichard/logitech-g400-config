@@ -27,7 +27,7 @@
 template <typename T>
 T check_libusb(T val) {
     if (val < 0) {
-        throw std::string(libusb_strerror(static_cast<libusb_error>(val)));
+        throw "libusb: " + std::string(libusb_strerror(static_cast<libusb_error>(val)));
     }
     return val;
 }

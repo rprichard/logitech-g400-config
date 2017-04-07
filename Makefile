@@ -1,5 +1,15 @@
-logitech-g400-config : logitech-g400-config.cc usb_wrapper.cc usb_wrapper.h
-	g++ -Wall -std=c++11 -Os logitech-g400-config.cc usb_wrapper.cc -o logitech-g400-config $$(pkg-config --cflags --libs libusb-1.0)
+CXXFLAGS := $$(pkg-config --cflags libusb-1.0) -std=c++11 -Wall
+PROG := logitech-g400-config
+PREFIX := /usr/local
 
-install : logitech-g400-config
-	echo INSTALLING
+all : $(PROG)
+
+$(PROG).o : usb_wrapper.h
+usb_wrapper.o : usb_wrapper.h
+
+$(PROG) : $(PROG).o usb_wrapper.o
+	$(CXX) -Wall -o $@ $^ $$(pkg-config --libs libusb-1.0)
+
+install :
+	mkdir -p $(PREFIX)/bin
+	install -m 755 -p -s $(PROG) $(PREFIX)/bin
