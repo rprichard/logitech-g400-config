@@ -5,11 +5,12 @@
 # directory.)
 #
 
-import argparse
+from __future__ import absolute_import, print_function, unicode_literals
+
 import sys
 import os
-sys.path.insert(1, os.path.join(os.path.dirname(os.path.realpath(__file__)), "hidapi_cffi"))
-import hidapi
+
+import hid
 
 FEATURE_RATE = 0x20
 FEATURE_DPI  = 0x8e
@@ -27,29 +28,44 @@ def usage(err=0):
     print("")
     sys.exit(err)
 
-def enum_hidapi_mice():
-    for info in hidapi.enumerate(0x046d, 0xc245):
-        if info.interface_number == 1:
-            yield info
-
 def open_device():
-    info = list(enum_hidapi_mice())
-    if len(info) == 0:
-        sys.exit("No G400 attached")
-    elif len(info) > 1:
-        sys.exit("Only one G400 supported")
+    info_good = []
+    info_skip = []
+
+    device_list = hid.enumerate(0x046d, 0xc245)
+    for info in device_list:
+        # The mouse should have two interfaces, #0 and #1.  We need interface #1.
+        # Linux hidraw uses `interface_number`.
+        # OSX uses a IOService paths, which includes a string like "/IOUSBHostInterface@0/".
+        if "/IOUSBHostInterface@0/" in info["path"] or info["interface_number"] == 0:
+            info_skip.append(info)
+        elif "/IOUSBHostInterface@1/" in info["path"] or info["interface_number"] == 1:
+            info_good.append(info)
+        else:
+            print("unexpected G400 USB device: " + info["path"])
+
+    if len(info_good) == 1:
+        return hid.Device(path=info_good[0]["path"])
+    elif len(info_good) != len(info_skip):
+        sys.exit("error: unexpected USB interfaces while querying for a G400 mouse")
+    elif len(info_good) == 0:
+        sys.exit("error: no G400 mouse attached")
     else:
-        info = info[0]
-    return hidapi.Device(info)
+        sys.exit("error: multiple G400 mice detected -- this script only supports one")
+
+
+
 
 def bytechr(val):
     return chr(val) if str is bytes else bytes([val])
 
 def set_var(dev, var, val):
-    dev.send_feature_report(bytechr(val), bytechr(var))
+    #dev.send_feature_report(bytechr(val), bytechr(var))
+    dev.send_feature_report(bytechr(var) + bytechr(val))
 
 def get_var(dev, var):
-    return ord(dev.get_feature_report(bytechr(var), 1))
+    #return ord(dev.get_feature_report(bytechr(var), 1))
+    return ord(dev.get_feature_report(var, 2)[1])
 
 def main():
     dev = open_device()

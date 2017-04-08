@@ -1,4 +1,4 @@
-Copyright (c) 2014, Johannes Baiter <johannes.baiter@gmail.com>
+Copyright (c) 2010, Alan Ott, Signal 11 Software
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

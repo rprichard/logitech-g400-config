@@ -4,17 +4,29 @@ A command-line program for setting the sampling rate and DPI settings of the
 Logitech G400 gaming mouse.
 
 The program uses the hidapi library (http://www.signal11.us/oss/hidapi/) for
-reading/writing the HID "feature reports" of the G400 mouse.  On Linux, this
-library uses the hidraw ("HID raw") driver.  I believe hidapi also uses udev
-and/or sysfs for querying the USB devices.
+reading/writing the HID "feature reports" of the G400 mouse.
 
-The tool is written in Python (either 2.7 or 3.x) and uses a CFFI-based module
-to access hidapi.  The CFFI-hidapi bridge module is less active/stable, so a
-copy lives in this repository.
+The tool is written in Python (either 2.7 or 3.x) and uses ctypes to access the
+native hidapi library.
 
 ## Prerequisites
 
-On Ubuntu: `sudo apt-get install python-cffi libhidapi-dev libhidapi-hidraw0 libhidapi-libusb0`
+### Ubuntu
+
+`sudo apt-get install libhidapi-dev libhidapi-libusb0`
+
+See the security HOWTO for instructions on making the USB devices accessible
+to this script without needing root.
+
+### macOS
+
+Build `libhidapi.dylib` with this command:
+```
+clang -Inative/hidapi native/mac/hid.c -o libhidapi.dylib -arch i386 -arch x86_64 -Os -shared -framework CoreFoundation -framework IOKit
+cp libhidapi.dylib /usr/local/lib
+```
+(The dylib can be placed anywhere so long as `hid/__init__.py` can find it.)
+Unlike Linux, macOS apparently requires no security adjustments.
 
 ## Usage
 
@@ -25,7 +37,7 @@ the settings.  See the Python script for more detail.
 usage: logitech-g400-config.py [-rRATE] [-dDPI]
 ```
 
-## Security HOWTO
+## Linux Security HOWTO
 
 Add a file, `/etc/udev/rules.d/10-logitech-g400-config.rules`, with contents:
 ```

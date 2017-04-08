@@ -6,12 +6,11 @@ __all__ = ['HIDException', 'DeviceInfo', 'Device', 'enumerate']
 
 hidapi = None
 library_paths = (
-    'libhidapi-hidraw.so',
-    'libhidapi-hidraw.so.0',
     'libhidapi-libusb.so',
     'libhidapi-libusb.so.0',
-    'libhidapi-iohidmanager.so',
-    'libhidapi-iohidmanager.so.0'
+    'libhidapi.so',
+    'libhidapi.so.0',
+    'libhidapi.dylib',
 )
 
 for lib in library_paths:
