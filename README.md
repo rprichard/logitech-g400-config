@@ -22,11 +22,12 @@ to this script without needing root.
 
 Build `libhidapi.dylib` with this command:
 ```
-clang -Inative/hidapi native/mac/hid.c -o libhidapi.dylib -arch i386 -arch x86_64 -Os -shared -framework CoreFoundation -framework IOKit
-cp libhidapi.dylib /usr/local/lib
+clang -Inative/hidapi native/mac/hid.c -o libhidapi.dylib \
+    -arch i386 -arch x86_64 \
+    -Os -shared \
+    -framework CoreFoundation -framework IOKit
 ```
-(The dylib can be placed anywhere so long as `hid/__init__.py` can find it.)
-Unlike Linux, macOS apparently requires no security adjustments.
+Unlike Linux, macOS apparently requires no security configuration.
 
 ## Usage
 
