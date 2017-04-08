@@ -58,8 +58,18 @@ DeviceInfo._fields_ = [
     ('next', ctypes.POINTER(DeviceInfo)),
 ]
 
+class my_void_p(ctypes.c_void_p):
+    # Use a subclass to work around ctypes brokenness.  If a function returns
+    # a c_void_p, then ctypes converts the pointer to a Python int.  On 64-bit
+    # macOS, int is 64-bits.  Then when ctypes passes the int value to another
+    # foreign function, it converts it to a C int (32-bits), truncating the
+    # pointer.  Avoid the first pointer->int conversion by using a subclass.
+    pass
+
 hidapi.hid_enumerate.restype = ctypes.POINTER(DeviceInfo)
 hidapi.hid_error.restype = ctypes.c_wchar_p
+hidapi.hid_open.restype = my_void_p
+hidapi.hid_open_path.restype = my_void_p
 
 
 def enumerate(vid=0, pid=0):
