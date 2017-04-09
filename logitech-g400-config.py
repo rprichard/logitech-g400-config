@@ -34,9 +34,10 @@ def open_device():
 
     device_list = hid.enumerate(0x046d, 0xc245)
     for info in device_list:
-        # The mouse should have two interfaces, #0 and #1.  We need interface #1.
-        # Linux hidraw uses `interface_number`.
-        # OSX uses a IOService paths, which includes a string like "/IOUSBHostInterface@0/".
+        # The mouse should have two interfaces, #0 and #1.  We need
+        # interface #1.  Linux uses the `interface_number` field.  macOS uses
+        # an IOKit IOService path, which includes a string like
+        # "/IOUSBHostInterface@0/".
         if b"/IOUSBHostInterface@0/" in info["path"] or info["interface_number"] == 0:
             info_skip.append(info)
         elif b"/IOUSBHostInterface@1/" in info["path"] or info["interface_number"] == 1:
