@@ -37,9 +37,9 @@ def open_device():
         # The mouse should have two interfaces, #0 and #1.  We need interface #1.
         # Linux hidraw uses `interface_number`.
         # OSX uses a IOService paths, which includes a string like "/IOUSBHostInterface@0/".
-        if "/IOUSBHostInterface@0/" in info["path"] or info["interface_number"] == 0:
+        if b"/IOUSBHostInterface@0/" in info["path"] or info["interface_number"] == 0:
             info_skip.append(info)
-        elif "/IOUSBHostInterface@1/" in info["path"] or info["interface_number"] == 1:
+        elif b"/IOUSBHostInterface@1/" in info["path"] or info["interface_number"] == 1:
             info_good.append(info)
         else:
             print("unexpected G400 USB device: " + info["path"])
@@ -53,19 +53,11 @@ def open_device():
     else:
         sys.exit("error: multiple G400 mice detected -- this script only supports one")
 
-
-
-
-def bytechr(val):
-    return chr(val) if str is bytes else bytes([val])
-
 def set_var(dev, var, val):
-    #dev.send_feature_report(bytechr(val), bytechr(var))
-    dev.send_feature_report(bytechr(var) + bytechr(val))
+    dev.send_feature_report(bytes(bytearray((var, val))))
 
 def get_var(dev, var):
-    #return ord(dev.get_feature_report(bytechr(var), 1))
-    return ord(dev.get_feature_report(var, 2)[1])
+    return bytearray(dev.get_feature_report(var, 2))[1]
 
 def main():
     dev = open_device()
