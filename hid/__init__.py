@@ -58,18 +58,10 @@ DeviceInfo._fields_ = [
     ('next', ctypes.POINTER(DeviceInfo)),
 ]
 
-class my_void_p(ctypes.c_void_p):
-    # Use a subclass to work around ctypes brokenness.  If a function returns
-    # a c_void_p, then ctypes converts the pointer to a Python int.  On 64-bit
-    # macOS, int is 64-bits.  Then when ctypes passes the int value to another
-    # foreign function, it converts it to a C int (32-bits), truncating the
-    # pointer.  Avoid the first pointer->int conversion by using a subclass.
-    pass
-
 hidapi.hid_enumerate.restype = ctypes.POINTER(DeviceInfo)
 hidapi.hid_error.restype = ctypes.c_wchar_p
-hidapi.hid_open.restype = my_void_p
-hidapi.hid_open_path.restype = my_void_p
+hidapi.hid_open.restype = ctypes.c_void_p
+hidapi.hid_open_path.restype = ctypes.c_void_p
 
 
 def enumerate(vid=0, pid=0):
@@ -89,20 +81,20 @@ def enumerate(vid=0, pid=0):
 class Device(object):
     def __init__(self, vid=None, pid=None, serial=None, path=None):
         if path:
-            self.__dev = hidapi.hid_open_path(path)
+            self.__dev = ctypes.c_void_p(hidapi.hid_open_path(path))
         elif serial:
             serial = ctypes.create_unicode_buffer(serial)
-            self.__dev = hidapi.hid_open(vid, pid, serial)
+            self.__dev = ctypes.c_void_p(hidapi.hid_open(vid, pid, serial))
         elif vid and pid:
-            self.__dev = hidapi.hid_open(vid, pid, None)
+            self.__dev = ctypes.c_void_p(hidapi.hid_open(vid, pid, None))
         else:
             raise ValueError('specify vid/pid or path')
 
-        if self.__dev == 0:
+        if not self.__dev:
             raise HIDException('unable to open device')
 
     def __hidcall(self, function, *args, **kwargs):
-        if self.__dev == 0:
+        if not self.__dev:
             raise HIDException('device closed')
 
         ret = function(*args, **kwargs)
@@ -146,9 +138,9 @@ class Device(object):
         return data.raw[:size]
 
     def close(self):
-        if self.__dev != 0:
+        if self.__dev:
             hidapi.hid_close(self.__dev)
-            self.__dev = 0
+            self.__dev = ctypes.c_void_p()
 
     @property
     def nonblocking(self):
