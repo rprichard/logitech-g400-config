@@ -31,11 +31,23 @@ Unlike Linux, macOS apparently requires no security configuration.
 
 ## Usage
 
-The script prints the current/final settings, and has two options for changing
-the settings.  See the Python script for more detail.
-
 ```
-usage: logitech-g400-config.py [-rRATE] [-dDPI]
+usage: logitech-g400-config.py [show]
+  Prints the current mouse settings
+
+usage: logitech-g400-config.py set [options]
+  -rRATE
+    RATE is in Hz and is one of: 125, 250, 500, or 1000.  The Windows driver
+    defaults to 500 Hz.
+  -dDPI
+    DPI is one of: 400, 800, 1800, 3600, or 3600_frozen.  With 3600_frozen, the
+    DPI+/DPI- buttons no longer change the DPI and instead are treated as
+    any other ordinary mouse button.
+
+usage: logitech-g400-config.py trace
+    Read mouse press/release interrupts from the Logitech-proprietary G400 USB
+    interface.  This interface will report DPI+/DPI- presses/releases even with
+    ordinary DPI settings.  End the tracing with Ctrl-C.
 ```
 
 ## Linux Security HOWTO

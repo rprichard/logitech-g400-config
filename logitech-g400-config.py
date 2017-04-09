@@ -10,25 +10,35 @@ from __future__ import absolute_import, print_function, unicode_literals
 import sys
 import os
 
-import hid
-
 FEATURE_RATE = 0x20
 FEATURE_DPI  = 0x8e
+RATE_LIST = [("1000", 0), ("500", 1), ("250", 2), ("125", 3)]
+DPI_LIST = [("400", 3), ("800", 4), ("1800", 5), ("3600", 6), ("3600_frozen", 7)]
 
 def usage(err=0):
-    print("usage: logitech-g400-config.py [-rRATE] [-dDPI]")
+    print("usage: logitech-g400-config.py [show]")
+    print("  Prints the current mouse settings")
     print("")
-    print("  RATE is in Hz and is one of: 125, 250, 500, or 1000.  The Windows driver")
-    print("  defaults to 500 Hz.")
+    print("usage: logitech-g400-config.py set [options]")
+    print("  -rRATE")
+    print("    RATE is in Hz and is one of: 125, 250, 500, or 1000.  The Windows driver")
+    print("    defaults to 500 Hz.")
+    print("  -dDPI")
+    print("    DPI is one of: 400, 800, 1800, 3600, or 3600_frozen.  With 3600_frozen, the")
+    print("    DPI+/DPI- buttons no longer change the DPI and instead are treated as")
+    print("    any other ordinary mouse button.")
     print("")
-    print("  DPI is an integer between 3 and 7 inclusive.  The Windows driver defaults to")
-    print("  four DPI settings, each of which configures a different DPI level:")
-    print("  400=>3, 800=>4, 1800=>5, 3600=>6.  It never uses 7, but the device seems OK with")
-    print("  that value.")
+    print("usage: logitech-g400-config.py trace")
+    print("    Read mouse press/release interrupts from the Logitech-proprietary G400 USB")
+    print("    interface.  This interface will report DPI+/DPI- presses/releases even with")
+    print("    ordinary DPI settings.  End the tracing with Ctrl-C.")
     print("")
     sys.exit(err)
 
 def open_device():
+    global hid
+    import hid
+
     info_good = []
     info_skip = []
 
@@ -60,31 +70,69 @@ def set_var(dev, var, val):
 def get_var(dev, var):
     return bytearray(dev.get_feature_report(var, 2))[1]
 
-def main():
+def map_pair_list(lst, val, reversed=False):
+    for pair in lst:
+        if val == pair[1 - (not reversed)]:
+            return pair[1 - reversed]
+    return None
+
+def reject_cmd_subargs(subargs):
+    for arg in subargs:
+        if arg == "--help":
+            usage(0)
+        else:
+            usage("error: unrecognized argument: " + arg)
+
+def do_set_cmd(subargs):
     dev = open_device()
-    for arg in sys.argv[1:]:
-        {
-            "-r125":  lambda: set_var(dev, FEATURE_RATE, 3),
-            "-r250":  lambda: set_var(dev, FEATURE_RATE, 2),
-            "-r500":  lambda: set_var(dev, FEATURE_RATE, 1),
-            "-r1000": lambda: set_var(dev, FEATURE_RATE, 0),
-            "-d3":    lambda: set_var(dev, FEATURE_DPI, 3),
-            "-d4":    lambda: set_var(dev, FEATURE_DPI, 4),
-            "-d5":    lambda: set_var(dev, FEATURE_DPI, 5),
-            "-d6":    lambda: set_var(dev, FEATURE_DPI, 6),
-            "-d7":    lambda: set_var(dev, FEATURE_DPI, 7),
-            "--help": lambda: usage(),
-        }.get(arg, lambda: usage("error: unrecognized argument: " + arg))()
+    for arg in subargs:
+        rate = map_pair_list(RATE_LIST, arg[2:])
+        dpi = map_pair_list(DPI_LIST, arg[2:])
+        if arg.startswith("-r") and rate is not None:
+            set_var(dev, FEATURE_RATE, rate)
+        elif arg.startswith("-d") and dpi is not None:
+            set_var(dev, FEATURE_DPI, dpi)
+        elif arg == "--help":
+            usage(0)
+        else:
+            usage("error: unrecognized argument: " + arg)
 
+def do_trace_cmd():
+    dev = open_device()
+    while True:
+        data = bytearray(dev.read(2, 1000))
+        if len(data) == 0:
+            continue
+        if data[0] == 0x80 and len(data) == 2:
+            buttonbits = bytearray(data)[1]
+            buttons = [" %s" % i for i in range(8) if (buttonbits & (1 << i)) != 0]
+            print("pressed:" + "".join(buttons))
+        else:
+            print("unknown:" + "".join([" %02x" % x for x in data]))
+
+def do_show_cmd():
+    dev = open_device()
     rate = get_var(dev, FEATURE_RATE)
-    rate = {
-        3: "125",
-        2: "250",
-        1: "500",
-        0: "1000",
-    }.get(rate, "unknown(%s)" % rate)
-
+    rate = map_pair_list(RATE_LIST, rate, True) or ("unknown(%s)" % rate)
+    dpi = get_var(dev, FEATURE_DPI)
+    dpi = map_pair_list(DPI_LIST, dpi, True) or ("unknown(%s)" % dpi)
     print("sampling_rate: %s" % rate)
-    print("dpi_level: %s" % get_var(dev, FEATURE_DPI))
+    print("dpi_level: %s" % dpi)
+
+def main():
+    cmd = sys.argv[1] if len(sys.argv) >= 2 else None
+    subargs = sys.argv[2:]
+    if cmd == "set":
+        do_set_cmd(subargs)
+    elif cmd == "trace":
+        reject_cmd_subargs(subargs)
+        do_trace_cmd()
+    elif cmd in [None, "show"]:
+        reject_cmd_subargs(subargs)
+        do_show_cmd()
+    elif cmd == "--help":
+        usage(0)
+    else:
+        usage("error: unrecognized command: " + cmd)
 
 main()
