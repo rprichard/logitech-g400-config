@@ -1,10 +1,10 @@
 # logitech-g400-config
 
 A command-line program for setting the sampling rate and DPI settings of the
-Logitech G400 gaming mouse.
+Logitech G400 and G400s gaming mice.
 
 The program uses the hidapi library (http://www.signal11.us/oss/hidapi/) for
-reading/writing the HID "feature reports" of the G400 mouse.
+reading/writing the mouse's HID "feature reports".
 
 The tool is written in Python (either 2.7 or 3.x) and uses ctypes to access the
 native hidapi library.
@@ -53,8 +53,15 @@ usage: logitech-g400-config.py trace
 ## Linux Security HOWTO
 
 Add a file, `/etc/udev/rules.d/10-logitech-g400-config.rules`, with contents:
+
+G400:
 ```
 SUBSYSTEM=="usb", ATTRS{idVendor}=="046d", ATTRS{idProduct}=="c245", MODE:="660", GROUP="plugdev"
+```
+
+G400s:
+```
+SUBSYSTEM=="usb", ATTRS{idVendor}=="046d", ATTRS{idProduct}=="c24c", MODE:="660", GROUP="plugdev"
 ```
 
 Run `sudo udevadm control --reload-rules`.
