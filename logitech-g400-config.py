@@ -84,18 +84,27 @@ def reject_cmd_subargs(subargs):
             usage("error: unrecognized argument: " + arg)
 
 def do_set_cmd(subargs):
-    dev = open_device()
+    rate = None
+    dpi = None
     for arg in subargs:
-        rate = map_pair_list(RATE_LIST, arg[2:])
-        dpi = map_pair_list(DPI_LIST, arg[2:])
-        if arg.startswith("-r") and rate is not None:
-            set_var(dev, FEATURE_RATE, rate)
-        elif arg.startswith("-d") and dpi is not None:
-            set_var(dev, FEATURE_DPI, dpi)
+        arg_val = arg[2:]
+        if arg.startswith("-r"):
+            rate = map_pair_list(RATE_LIST, arg_val)
+            if rate is None:
+                usage("error: invalid RATE setting: " + arg_val)
+        elif arg.startswith("-d"):
+            dpi = map_pair_list(DPI_LIST, arg_val)
+            if dpi is None:
+                usage("error: invalid DPI setting: " + arg_val)
         elif arg == "--help":
             usage(0)
         else:
             usage("error: unrecognized argument: " + arg)
+    dev = open_device()
+    if rate is not None:
+        set_var(dev, FEATURE_RATE, rate)
+    if dpi is not None:
+        set_var(dev, FEATURE_DPI, dpi)
 
 def do_trace_cmd():
     dev = open_device()
