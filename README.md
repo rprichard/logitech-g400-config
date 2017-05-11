@@ -66,3 +66,6 @@ $ groups
 rprichard adm cdrom sudo dip plugdev lpadmin sambashare vboxusers wireshark
 ```
 Log out and back in to make sure group membership takes effect.
+
+Unplug the mouse and plug it back in.  The udev rule only applies when the
+operating system initializes a device.
