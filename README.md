@@ -40,12 +40,20 @@ usage: logitech-g400-config.py set [options]
     RATE is in Hz and is one of: 125, 250, 500, or 1000.  The Windows driver
     defaults to 500 Hz.
   -dDPI
-    DPI is one of: 400, 800, 1800, 3600, or 3600_frozen.  With 3600_frozen, the
-    DPI+/DPI- buttons no longer change the DPI and instead are treated as
-    any other ordinary mouse button.
+    DPI is one of:
+        400             [G400 and G400s]
+        800             [G400 and G400s]
+        1800            [G400 and G400s]
+        3600            [G400 and G400s]
+        400_locked      [G400s only]
+        800_locked      [G400s only]
+        1800_locked     [G400s only]
+        3600_locked     [G400 and G400s]
+    With the "locked" settings, the DPI+/DPI- buttons no longer change the DPI
+    and instead are treated as any other ordinary mouse button.
 
 usage: logitech-g400-config.py trace
-    Read mouse press/release interrupts from the Logitech-proprietary G400 USB
+    Read mouse press/release interrupts from the Logitech-proprietary USB
     interface.  This interface will report DPI+/DPI- presses/releases even with
     ordinary DPI settings.  End the tracing with Ctrl-C.
 ```
