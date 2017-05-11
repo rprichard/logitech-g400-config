@@ -13,7 +13,7 @@ native hidapi library.
 
 ### Ubuntu
 
-`sudo apt-get install libhidapi-dev libhidapi-libusb0`
+`sudo apt-get install libhidapi-libusb0`
 
 See the security HOWTO for instructions on making the USB devices accessible
 to this script without needing root.
