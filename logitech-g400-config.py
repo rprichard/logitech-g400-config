@@ -144,4 +144,5 @@ def main():
     else:
         usage("error: unrecognized command: " + cmd)
 
-main()
+if __name__ == "__main__":
+    main()
