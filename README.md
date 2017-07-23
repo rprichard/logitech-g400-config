@@ -9,6 +9,11 @@ reading/writing the HID "feature reports" of the G400 mouse.
 The tool is written in Python (either 2.7 or 3.x) and uses ctypes to access the
 native hidapi library.
 
+NOTE: This program works with the G400 mouse, *not* the G400s mouse.  See
+https://github.com/rprichard/logitech-g400-config/issues/3 for some details,
+or https://tnsp.org/~ccr/files/g400s_hack.c for something that works with the
+G400s.
+
 ## Prerequisites
 
 ### Ubuntu
