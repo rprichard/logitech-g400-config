@@ -92,8 +92,6 @@ def do_set_cmd(subargs):
         arg_val = arg[2:]
         if arg.startswith("-r"):
             rate = map_pair_list(RATE_LIST, arg_val)
-            print("--rate--")
-            print(rate)
             if rate is None:
                 usage("error: invalid RATE setting: " + arg_val)
         elif arg.startswith("-d"):
