@@ -67,7 +67,6 @@ def open_device():
         sys.exit("error: multiple G400 mice detected -- this script only supports one")
 
 def set_var(dev, var, val):
-    print(dev,var,val)
     dev.send_feature_report(bytearray((var, val)))
 
 def get_var(dev, var):
