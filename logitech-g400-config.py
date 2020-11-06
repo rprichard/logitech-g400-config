@@ -9,6 +9,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 import sys
 import os
+import hid
 
 FEATURE_RATE = 0x20
 FEATURE_DPI  = 0x8e
@@ -36,9 +37,6 @@ def usage(err=0):
     sys.exit(err)
 
 def open_device():
-    global hid
-    import hid
-
     info_good = []
     info_skip = []
 
@@ -50,13 +48,17 @@ def open_device():
         # "/IOUSBHostInterface@0/".
         if b"/IOUSBHostInterface@0/" in info["path"] or info["interface_number"] == 0:
             info_skip.append(info)
-        elif b"/IOUSBHostInterface@1/" in info["path"] or info["interface_number"] == 1:
+        elif "Gaming Mouse G400" in info["product_string"] or info["interface_number"] == 1:
             info_good.append(info)
         else:
             print("unexpected G400 USB device: " + info["path"])
 
+
     if len(info_good) == 1:
-        return hid.Device(path=info_good[0]["path"])
+        device = info_good[0]
+        h = hid.device()
+        h.open(device["vendor_id"], device["product_id"])
+        return h
     elif len(info_good) != len(info_skip):
         sys.exit("error: unexpected USB interfaces while querying for a G400 mouse")
     elif len(info_good) == 0:
@@ -65,7 +67,7 @@ def open_device():
         sys.exit("error: multiple G400 mice detected -- this script only supports one")
 
 def set_var(dev, var, val):
-    dev.send_feature_report(bytes(bytearray((var, val))))
+    dev.send_feature_report(bytearray((var, val)))
 
 def get_var(dev, var):
     return bytearray(dev.get_feature_report(var, 2))[1]

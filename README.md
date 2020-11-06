@@ -25,14 +25,7 @@ to this script without needing root.
 
 ### macOS
 
-Build `libhidapi.dylib` with this command:
-```
-clang -Inative/hidapi native/mac/hid.c -o libhidapi.dylib \
-    -arch i386 -arch x86_64 \
-    -Os -shared \
-    -framework CoreFoundation -framework IOKit
-```
-Unlike Linux, macOS apparently requires no security configuration.
+Follow instructions here: https://github.com/libusb/hidapi
 
 ## Usage
 
