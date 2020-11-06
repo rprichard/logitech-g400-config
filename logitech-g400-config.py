@@ -57,7 +57,7 @@ def open_device():
     if len(info_good) == 1:
         device = info_good[0]
         h = hid.device()
-        dev = h.open(device["vendor_id"], device["product_id"])
+        h.open(device["vendor_id"], device["product_id"])
         return h
     elif len(info_good) != len(info_skip):
         sys.exit("error: unexpected USB interfaces while querying for a G400 mouse")
